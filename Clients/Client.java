@@ -26,7 +26,7 @@ public class Client implements Runnable{
 
 
     public Client(){
-        this.server_cport = 9876;
+        this.server_cport = 49876;
         this.buffer = new byte[2048];
         this.subscribed = false;
         this.client_id = UUID.randomUUID();
