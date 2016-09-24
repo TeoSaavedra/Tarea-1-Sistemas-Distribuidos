@@ -76,7 +76,6 @@ public class CentralServer implements Runnable{
             }
         }catch (Exception e) {
             e.printStackTrace();
-            System.err.println(e);
         }
     }
 
@@ -86,10 +85,10 @@ public class CentralServer implements Runnable{
         CentralServer central_server = new CentralServer();
         Thread receptor = new Thread(central_server);
         receptor.start();
+        Scanner scanner = new Scanner(System.in);
 
         while(true) {
             System.out.println("[Servidor Central]: Agregar Servidor de Zona");
-            Scanner scanner = new Scanner(System.in);
             System.out.println("[Servidor Central]: Nombre:");
             String server_name = scanner.nextLine();
             System.out.println("[Servidor Central]: IP Multicast:");
