@@ -21,7 +21,7 @@ public class Client implements Runnable{
     MulticastSocket multicast_socket;
     boolean subscribed;
     UUID client_id;
-    ArrayList<Distribumon> dmon_captured;
+    LinkedHashMap<Integer,Distribumon> dmon_captured ;
     LinkedHashMap<Integer,Distribumon> dmon_inzone;
 
 
@@ -30,7 +30,7 @@ public class Client implements Runnable{
         this.buffer = new byte[2048];
         this.subscribed = false;
         this.client_id = UUID.randomUUID();
-        this.dmon_captured = new ArrayList<Distribumon>();
+        this.dmon_captured = new LinkedHashMap<Integer,Distribumon>();
         this.dmon_inzone = new LinkedHashMap<Integer,Distribumon>();
     }
 
@@ -91,10 +91,10 @@ public class Client implements Runnable{
 
     private void listDistribumonsCaptured(){
         System.out.println("******");
-        for(Distribumon entry : dmon_captured){
-            System.out.print("id: " + entry.getId() + ", ");
-            System.out.print("nombre: " + entry.getName() + ", ");
-            System.out.println("nivel: " + entry.getLevel());
+        for(Map.Entry<Integer,Distribumon> entry : dmon_captured.entrySet()){
+            System.out.print("id: " + entry.getValue().getId() + ", ");
+            System.out.print("nombre: " + entry.getValue().getName() + ", ");
+            System.out.println("nivel: " + entry.getValue().getLevel());
         }
         System.out.println("******");
     }
@@ -170,20 +170,39 @@ public class Client implements Runnable{
 
                 ByteArrayInputStream stream = new ByteArrayInputStream(buffer);
                 ObjectInputStream oos = new ObjectInputStream(stream);
-                Distribumon new_dmon = (Distribumon) oos.readObject();
+                @SuppressWarnings("unchecked")
+                LinkedHashMap<Integer,Distribumon> list = (LinkedHashMap<Integer,Distribumon>) oos.readObject();
 
-                if(new_dmon.isCaptured()){
-                    if(this.client_id.equals(new_dmon.getOwner())){
-                        System.out.println("[Cliente]: Se atrapo un Distribumon!: " + new_dmon.getName());
-                        this.dmon_captured.add(new_dmon);
-                        this.dmon_inzone.remove(new_dmon.getId());
-                    }else{
-                        System.out.println("[Cliente]: Fue atrapado un Distribumon!: " + new_dmon.getName());
-                        this.dmon_inzone.remove(new_dmon.getId());
+                for(Map.Entry<Integer,Distribumon> new_dmon : list.entrySet()) {
+                    //itero sobre los Distribumones
+
+                    if (new_dmon.getValue().isCaptured()) {
+                        //Si el Distribumon se capturo
+
+                        if (this.client_id.equals(new_dmon.getValue().getOwner())) {
+                            //Si el Distribumon lo capturo el cliente
+                            if(!dmon_captured.containsKey(new_dmon.getKey())){
+                                //Si no se ha notificado de que fue capturado
+                                System.out.println("[Cliente]: Se atrapo un Distribumon!: " + new_dmon.getValue().getName());
+                                dmon_captured.put(new_dmon.getKey(),new_dmon.getValue());
+                            }
+                            dmon_inzone.remove(new_dmon.getKey());
+                        }
+                        else {
+                            //Si lo capturo otro cliente
+                            dmon_inzone.remove(new_dmon.getKey());
+                        }
                     }
-                }else{
-                    System.out.println("[Cliente]: Aparece nuevo Distribumon!: " + new_dmon.getName());
-                    this.dmon_inzone.put(new_dmon.getId(),new_dmon);
+                    else {
+                        //Caso de que no esta capturado y sigue en la zona
+                        if(!dmon_inzone.containsKey(new_dmon.getKey())){
+                            //Caso de que recien aparece en la zona
+                            if(!dmon_inzone.isEmpty()) {
+                                System.out.println("[Cliente]: Aparece nuevo Distribumon!: " + new_dmon.getValue().getName());
+                            }
+                            this.dmon_inzone.put(new_dmon.getKey(), new_dmon.getValue());
+                        }
+                    }
                 }
 
 

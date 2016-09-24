@@ -57,7 +57,7 @@ public class ZoneServer implements Runnable{
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             ObjectOutput oo = new ObjectOutputStream(stream);
-            oo.writeObject(new_dmon);
+            oo.writeObject(dmon_list);
             oo.close();
 
             DatagramPacket packet = new DatagramPacket(stream.toByteArray(),stream.toByteArray().length,InetAddress.getByName(server_mcastip),server_mcastport);
@@ -101,7 +101,7 @@ public class ZoneServer implements Runnable{
 
                 ByteArrayOutputStream response = new ByteArrayOutputStream();
                 ObjectOutput oo = new ObjectOutputStream(response);
-                oo.writeObject(dmon);
+                oo.writeObject(dmon_list);
                 oo.close();
 
                 DatagramPacket rpacket = new DatagramPacket(response.toByteArray(),response.toByteArray().length,InetAddress.getByName(server_mcastip),server_mcastport);
@@ -124,14 +124,14 @@ public class ZoneServer implements Runnable{
         String server_name = scanner.nextLine();
         System.out.println("[Servidor Zona:" + server_name + "]: IP Multicast:");
         String server_mcastip = scanner.nextLine();
-        System.out.println("[Servidor Zona:" + server_name + "]: Puerto Multicast:");
-        int server_mcastport = Integer.parseInt(scanner.nextLine());
+        //System.out.println("[Servidor Zona:" + server_name + "]: Puerto Multicast:");
+        //int server_mcastport = Integer.parseInt(scanner.nextLine());
         System.out.println("[Servidor Zona:" + server_name + "]: IP Peticiones");
         String server_ip = scanner.nextLine();
         System.out.println("[Servidor Zona:" + server_name + "]: Puerto Peticiones");
         int server_port = Integer.parseInt(scanner.nextLine());
 
-        ZoneServer zone_server = new ZoneServer(server_name,server_mcastip,server_mcastport,server_ip,server_port);
+        ZoneServer zone_server = new ZoneServer(server_name,server_mcastip,4445,server_ip,server_port);
         Thread receptor = new Thread(zone_server);
         receptor.start();
 
