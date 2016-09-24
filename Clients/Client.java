@@ -141,7 +141,7 @@ public class Client implements Runnable{
             System.out.println("[Cliente]: (2) Cambiar Zona");
             System.out.println("[Cliente]: (3) Capturar Distribumon");
             System.out.println("[Cliente]: (4) Listar Distribumones Capturados");
-            System.out.println("[Cliente]: Seleccionar una opción:");
+            System.out.println("[Cliente]: Seleccionar una opcion:");
             int option = scanner.nextInt();
             System.out.println("[Cliente]: Opcion " + option);
             if(option == 1){
