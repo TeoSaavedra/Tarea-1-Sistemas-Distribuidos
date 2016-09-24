@@ -24,7 +24,7 @@ public class CentralServer implements Runnable{
 
     public CentralServer(){
         diccionario = new HashMap<String, ClientToServerResponse>();
-        port = 9876;
+        port = 49876;
         buffer = new byte[2048];
     }
 
